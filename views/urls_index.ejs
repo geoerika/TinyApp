@@ -4,13 +4,16 @@
   <title>TinyApp</title>
 </head>
 <body>
-    <h2>Loop</h2>
+  <header>
+    <% include ../views/partials/_header %>
+  </header>
+  <h2>Loop</h2>
 
-      <ul>
-        <% for(const url in urls) { %>
-          <li><%= url %> - <%= urls[url] %></li>
-        <% }; %>
-      </ul>
-    <a href ="#">Add a url:</a>
+    <ul>
+      <% for(const url in urls) { %>
+        <li><%= url %> - <%= urls[url] %></li>
+      <% }; %>
+    </ul>
+  <a href ="#">Add a url:</a>
 </body>
 </html>
