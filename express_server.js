@@ -13,7 +13,7 @@ app.get("/", (req, res) => {
   res.send("Hello!");
 });
 
-app.get("/urls.json", (req, res) => {
+app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
@@ -29,6 +29,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   let templateVars = { shortURL: req.params.id, fullURL: urlDatabase[req.params.id] };
+  console.log(urlDatabase);
   res.render("urls_show", templateVars);
 });
 
@@ -50,6 +51,16 @@ app.get("/u/:shortURL", (req, res, next) => {
     res.send('No such shortURL!!\n');
   }
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
+app.post("/urls/:id/update", (req, res) => {
+  urlDatabase[req.params.id] = req.body.fullURL;
+  res.redirect("/urls");
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
