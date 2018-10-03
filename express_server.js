@@ -1,5 +1,8 @@
 var express = require("express");
+var cookieParser = require("cookie-parser");
+
 var app = express();
+
 var PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
@@ -60,7 +63,13 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id/update", (req, res) => {
   urlDatabase[req.params.id] = req.body.fullURL;
   res.redirect("/urls");
-})
+});
+
+app.post("/login", (req, res) => {
+  console.log(req.body.username);
+  res.cookie('username', req.body.username);
+  res.redirect("/urls");
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
