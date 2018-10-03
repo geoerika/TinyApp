@@ -7,6 +7,13 @@
    <header>
     <% include ../views/partials/_header %>
   </header>
-  <p><%= fullURL %> - <%= shortURL %></p>
+
+  <p>ShortURL: <b><%= shortURL %></b></p>
+
+  <form method="POST" action="/urls/<%= shortURL %>/update">
+    <input name="fullURL" value="<%= fullURL %>">
+    <input type="submit" class="like" value="Update">
+  </form>
+
 </body>
 </html>
