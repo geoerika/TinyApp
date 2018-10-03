@@ -10,10 +10,11 @@
   <h2>Loop</h2>
 
     <ul>
-      <% for(const url in urls) { %>
-        <li><%= url %> - <%= urls[url] %></li>
+      <% for(let url in urls) { %>
+        <li><%= url %> - <%= urls[url] %><form method="POST" action="/urls/<%= url %>/delete"><input type="submit">Delete url</form></li>
       <% }; %>
     </ul>
+
   <a href ="#">Add a url:</a>
 </body>
 </html>
