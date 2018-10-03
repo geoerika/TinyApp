@@ -42,7 +42,6 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id,
     fullURL: urlDatabase[req.params.id]
   };
-  console.log(urlDatabase);
   res.render("urls_show", templateVars);
 });
 
