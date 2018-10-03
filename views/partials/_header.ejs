@@ -1,9 +1,15 @@
 <title>HEADER </title>
 
 <p>
-  <form method="POST" action="/login">
-    <input name="username" type="text">
-    <input type="submit" value="Submit">
-  </form>
-  <p><%= username %></p>
+  <% if (username) { %>
+      <p><%= username %></p>
+      <form method="POST" action="/logout">
+      <input type="submit" value="Logout">
+      </form>
+  <% } else { %>
+    <form method="POST" action="/login">
+      <input name="username" type="text">
+      <input type="submit" value="Login">
+    </form>
+  <% } %>
 </p>
