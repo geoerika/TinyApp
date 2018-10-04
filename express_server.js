@@ -112,15 +112,22 @@ app.get("/register", (req, res) => {
 })
 
 app.post("/register", (req, res) => {
+
   let userEmail = req.body.email;
   let userPassword = req.body.password;
-  let userId = generateRandomString();
-  users[userId] = {};
-  users[userId].id = userId;
-  users[userId].email = userEmail;
-  users[userId].password = userPassword;
-  res.cookie("userId", userId);
-  res.redirect("/urls");
+  if (!userEmail || !userPassword) {
+    res.status(400).send('Bad Request');
+  } else if (findEmail (userEmail, users)) {
+    res.status(400).send('Bad Request');
+  } else {
+    let userId = generateRandomString();
+    users[userId] = {};
+    users[userId].id = userId;
+    users[userId].email = userEmail;
+    users[userId].password = userPassword;
+    res.cookie("userId", userId);
+    res.redirect("/urls");
+  }
 })
 
 function generateRandomString() {
@@ -130,6 +137,17 @@ function generateRandomString() {
     randomString += charString[Math.floor(Math.random()*charString.length)]
   }
   return randomString;
+}
+
+function findEmail (email, userObj) {
+  const usersArray = Object.values(users);
+  let foundEmail = false;
+  for (user of usersArray) {
+    if (user.email === email) {
+      foundEmail = true;
+    }
+  }
+  return foundEmail;
 }
 
 app.listen(PORT, () => {
