@@ -41,8 +41,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  let userId = req.cookies.user_id;
+  console.log("userId: ", userId);
   let templateVars = {
-    username: req.cookies["username"],
+    user: users[userId],
     urls: urlDatabase
   };
   res.render("urls_index", templateVars);
@@ -60,8 +62,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  let userId = res.cookie.userId;
   let templateVars = {
-    username: req.cookies["username"],
+    user: users[userId],
     shortURL: req.params.id,
     fullURL: urlDatabase[req.params.id]
   };
@@ -97,10 +100,23 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
-});
+// app.post("/login", (req, res) => {
+//   let userEmail = req.body.email;
+//   let userPassword = req.body.password;
+//   // if (!userEmail || !userPassword) {
+//   //   res.status(400).send('Bad Request');
+//   // } else if (findEmail (userEmail, users)) {
+
+//   } else {
+//     let userId = generateRandomString();
+//     users[userId] = {};
+//     users[userId].id = userId;
+//     users[userId].email = userEmail;
+//     users[userId].password = userPassword;
+//     res.cookie("user_id", userId);
+//     res.redirect("/urls");
+//   }
+// });
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
@@ -125,9 +141,14 @@ app.post("/register", (req, res) => {
     users[userId].id = userId;
     users[userId].email = userEmail;
     users[userId].password = userPassword;
-    res.cookie("userId", userId);
+    res.cookie("user_id", userId);
+    console.log("res.cookie.user_id",res.cookie.user_id)
     res.redirect("/urls");
   }
+})
+
+app.get("/login", (req, res) => {
+  res.render("login");
 })
 
 function generateRandomString() {
