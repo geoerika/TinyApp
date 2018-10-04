@@ -13,6 +13,38 @@ var urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "hoodoos-orange"
+  },
+  "user3RandomID": {
+    id: "user3RandomID",
+    email: "user3@example.com",
+    password: "travel-fun"
+  },
+  "user4RandomID": {
+    id: "user4RandomID",
+    email: "user4@example.com",
+    password: "sleep-deprived"
+  }
+}
+
+function generateRandonString() {
+  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  randomString = "";
+  for (let i = 0; i < 6; i++) {
+    randomString += charString[Math.floor(Math.random()*charString.length)]
+  }
+  return randomString;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -84,16 +116,15 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/register", (req, res) => {
+  res.render("/register");
+}
+
+app.post("/register", (req, res) => {
+
+})
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
 
 });
-
-function generateRandonString() {
-  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  randomString = "";
-  for (let i = 0; i < 6; i++) {
-    randomString += charString[Math.floor(Math.random()*charString.length)]
-  }
-  return randomString;
-}
