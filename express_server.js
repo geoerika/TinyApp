@@ -62,7 +62,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  let userId = res.cookie.userId;
+  let userId = res.cookies.user_id;
   let templateVars = {
     user: users[userId],
     shortURL: req.params.id,
@@ -100,6 +100,10 @@ app.post("/urls/:id/update", (req, res) => {
   res.redirect("/urls");
 });
 
+app.get("/login", (req, res) => {
+  res.render("login");
+})
+
 // app.post("/login", (req, res) => {
 //   let userEmail = req.body.email;
 //   let userPassword = req.body.password;
@@ -118,6 +122,8 @@ app.post("/urls/:id/update", (req, res) => {
 //   }
 // });
 
+
+
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
@@ -133,7 +139,7 @@ app.post("/register", (req, res) => {
   let userPassword = req.body.password;
   if (!userEmail || !userPassword) {
     res.status(400).send('Bad Request');
-  } else if (findEmail (userEmail, users)) {
+  } else if (findMatch(userEmail, users)) {
     res.status(400).send('Bad Request');
   } else {
     let userId = generateRandomString();
@@ -147,9 +153,6 @@ app.post("/register", (req, res) => {
   }
 })
 
-app.get("/login", (req, res) => {
-  res.render("login");
-})
 
 function generateRandomString() {
   let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -160,15 +163,15 @@ function generateRandomString() {
   return randomString;
 }
 
-function findEmail (email, userObj) {
+function findMatch (match, userObj) {
   const usersArray = Object.values(users);
-  let foundEmail = false;
+  let foundMatch = false;
   for (user of usersArray) {
-    if (user.email === email) {
-      foundEmail = true;
+    if (user.email === match || user.password === match) {
+      foundMatch = true;
     }
   }
-  return foundEmail;
+  return foundMatch;
 }
 
 app.listen(PORT, () => {
