@@ -104,25 +104,25 @@ app.get("/login", (req, res) => {
   res.render("login");
 })
 
-// app.post("/login", (req, res) => {
-//   let userEmail = req.body.email;
-//   let userPassword = req.body.password;
-//   // if (!userEmail || !userPassword) {
-//   //   res.status(400).send('Bad Request');
-//   // } else if (findEmail (userEmail, users)) {
-
-//   } else {
-//     let userId = generateRandomString();
-//     users[userId] = {};
-//     users[userId].id = userId;
-//     users[userId].email = userEmail;
-//     users[userId].password = userPassword;
-//     res.cookie("user_id", userId);
-//     res.redirect("/urls");
-//   }
-// });
-
-
+app.post("/login", (req, res) => {
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+  if (!findMatch(userEmail, users)) {
+    res.status(403).send('No Permission to Access');
+  } else {
+    if (!findMatch(userPassword, users)) {
+    res.status(403).send('No Permission to Access');
+    } else {
+      let userId = generateRandomString();
+      users[userId] = {};
+      users[userId].id = userId;
+      users[userId].email = userEmail;
+      users[userId].password = userPassword;
+      res.cookie("user_id", userId);
+      res.redirect("/");
+    }
+  }
+});
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
@@ -148,7 +148,6 @@ app.post("/register", (req, res) => {
     users[userId].email = userEmail;
     users[userId].password = userPassword;
     res.cookie("user_id", userId);
-    console.log("res.cookie.user_id",res.cookie.user_id)
     res.redirect("/urls");
   }
 })
