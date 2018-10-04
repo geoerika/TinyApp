@@ -36,15 +36,6 @@ const users = {
   }
 }
 
-function generateRandonString() {
-  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  randomString = "";
-  for (let i = 0; i < 6; i++) {
-    randomString += charString[Math.floor(Math.random()*charString.length)]
-  }
-  return randomString;
-}
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -82,7 +73,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/urls", (req, res) => {
   // console.log(req.body);  // debug statement to see POST parameters
-  let shortURL = generateRandonString();
+  let shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;    // Respond with 'Ok'
   res.redirect(`/urls/${shortURL}`);
 });
@@ -117,12 +108,29 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("/register");
-}
+  res.render("register");
+})
 
 app.post("/register", (req, res) => {
-
+  let userEmail = req.body.email;
+  let userPassword = req.body.password;
+  let userId = generateRandomString();
+  users[userId] = {};
+  users[userId].id = userId;
+  users[userId].email = userEmail;
+  users[userId].password = userPassword;
+  res.cookie("userId", userId);
+  res.redirect("/urls");
 })
+
+function generateRandomString() {
+  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  randomString = "";
+  for (let i = 0; i < 6; i++) {
+    randomString += charString[Math.floor(Math.random()*charString.length)]
+  }
+  return randomString;
+}
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
