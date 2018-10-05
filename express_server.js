@@ -182,7 +182,8 @@ app.get('/urls/:shortURL', (req, res, next) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  if (req.cookies.user_id === urldatabase[req.cookies.user_id].userID) {
+  if (req.cookies.user_id === urlDatabase[req.params.id].userID) {
+    console.log(req.cookies.user_id);
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
   } else {
@@ -191,8 +192,9 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/urls/:id/update', (req, res) => {
-  if (req.cookies.user_id === urldatabase[req.cookies.user_id].userID) {
-    urlDatabase[req.cookies.user_id].longURL = req.body.fullURL;
+  console.log("req.cookies.user_id", req.cookies.user_id);
+  if (req.cookies.user_id === urlDatabase[req.params.id].userID) {
+    urlDatabase[req.params.id].longURL = req.body.fullURL;
     res.redirect('/urls');
   } else {
     res.status(403).send('No Permission to Access');
