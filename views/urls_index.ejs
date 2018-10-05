@@ -5,17 +5,18 @@
 </head>
 <body>
   <header>
-    <% include ../views/partials/_header %>
+    <% include ./partials/_header %>
   </header>
-  <h2>Loop</h2>
+  <h2>LIST of URLS</h2>
 
     <ul>
-      <% for(let url in urls) { %>
-        <li><%= url %> - <a href ="#"><%= urls[url] %></a>
-          <a href="/urls/<%= url %>" ">Edit</a>
-          <form method="POST" action="/urls/<%= url %>/delete"><input type="submit" class="like" value="Delete url"></form>
-        </li>
-      <% }; %>
+      <% urls.forEach((url) => { %>
+            <li>
+              <%= url %> - <a href ="#"><%= url.longURL %></a>
+              <a href="/urls/<%= url %>" ">Edit</a><br/>
+              <form method="POST" action="/urls/<%= url %>/delete"><input type="submit" class="like" value="Delete url"></form><br/>
+            </li>
+      <% }) %>
     </ul>
 
   <a href ="#">Add a url:</a>
