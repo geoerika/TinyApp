@@ -1,5 +1,11 @@
 <title>HEADER </title>
-
-<a href="/register">Register</a><br/>
-<p></p>
-<a href="/login">Login</a>
+  <% if (user) { %>
+    <%= user.email %>
+    <form method="POST" action="/logout">
+      <input type="submit" value="Logout">
+    </form>
+  <% } else { %>
+    <a href="/register">Register</a><br/>
+    <p></p>
+    <a href="/login">Login</a>
+  <% } %>
