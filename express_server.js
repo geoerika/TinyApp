@@ -8,7 +8,7 @@ var PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 app.use(cookieParser());
 
-var urlDatabase = {
+const urlDatabase = {
   'b2xVn2': {
     longURL:'http://www.lighthouselabs.ca',
     userID: 'userRandomID'
@@ -16,8 +16,13 @@ var urlDatabase = {
 
   '9sm5xK': {
     longURL: 'http://www.google.com',
-    userID: 'user4RandomID'
-  }
+    userID: 'user2RandomID'
+  },
+
+  'b4xVn6': {
+    longURL:'http://www.amazon.ca',
+    userID: 'user2RandomID'
+  },
 };
 
 const users = {
@@ -43,6 +48,63 @@ const users = {
   }
 };
 
+function generateRandomString() {
+  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  randomString = '';
+  for (let i = 0; i < 6; i++) {
+    randomString += charString[Math.floor(Math.random()*charString.length)]
+  }
+  return randomString;
+}
+
+function findMatch (match, userObj) {
+  const usersArray = Object.values(users);
+  let foundMatch = false;
+  for (user of usersArray) {
+    if (user.email === match || user.password === match) {
+      foundMatch = true;
+    }
+  }
+  return foundMatch;
+}
+
+function matchEmailPass (email, password) {
+  const usersArray = Object.values(users); //creates a list of users
+  let foundMatch = false;
+  for (let user of usersArray) {
+    if ((user.email === email) && (user.password === password)) {
+      foundMatch = true;
+    }
+  };
+  return foundMatch;
+}
+
+function userIdbyEmail (email) {
+  const usersArray = Object.values(users); //creates a list of users
+  let userId = 0;
+  for (let user of usersArray) {
+    if (user.email === email) {
+      userId = user.id;
+    }
+  }
+  return userId;
+ }
+
+const userUrlDatabase = (userId, urlDatabase1) => {
+
+  let retUrlArr = [];
+  Object.keys(urlDatabase).forEach((url) => {
+    if (urlDatabase1[url].userID === userId) {
+      let retUrlObj = {};
+      retUrlObj.longURL ='';
+      retUrlObj.shortURL = url;
+      retUrlObj.longURL = urlDatabase1[url].longURL;
+      retUrlArr.push(retUrlObj);
+    }
+  });
+  return retUrlArr;
+};
+
 app.get('/', (req, res) => {
 
   if (req.cookies.user_id) {
@@ -53,14 +115,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  if(req.cookies.user_id) {
+  if (req.cookies.user_id) {
     let userId = req.cookies.user_id;
+    let userUrlsArray= userUrlDatabase(userId, urlDatabase);
     let templateVars = {
-      user: users[userId],
-      urls: urlDatabase
+      email: users[userId].email,
+      urls: userUrlsArray
     };
-  } else {
     res.render('urls_index', templateVars);
+  } else {
+
   }
 });
 
@@ -105,23 +169,31 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.get('/u/:shortURL', (req, res, next) => {
+app.get('/urls/:shortURL', (req, res, next) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
   if (longURL) {
-    res.redirect(longURL);
+    res.redirect('urls_show');
   } else {
     res.send('No such shortURL!!\n');
   }
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect('/urls');
+  if (req.cookie.user_id === urldatabase[req.params.id].userID) {
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls');
+  } else {
+    res.status(403).send('No Permission to Access');
+  }
 });
 
 app.post('/urls/:id/update', (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.fullURL;
-  res.redirect('/urls');
+  if (req.cookie.user_id === urldatabase[req.params.id].userID) {
+    urlDatabase[req.params.id].longURL = req.body.fullURL;
+    res.redirect('/urls');
+  } else {
+    res.status(403).send('No Permission to Access');
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -136,14 +208,10 @@ app.post('/login', (req, res) => {
   if (!findMatch(userEmail, users)) {
     res.status(403).send('No Permission to Access');
   } else {
-    if (!findMatch(userPassword, users)) {
+    if (!matchEmailPass(userEmail, userPassword, users)) {
     res.status(403).send('No Permission to Access');
     } else {
-      let userId = generateRandomString();
-      users[userId] = {};
-      users[userId].id = userId;
-      users[userId].email = userEmail;
-      users[userId].password = userPassword;
+      let userId = userIdbyEmail(userEmail);
       res.cookie('user_id', userId);
       res.redirect('/');
     }
@@ -178,27 +246,6 @@ app.post('/register', (req, res) => {
   }
 });
 
-function generateRandomString() {
-  let charString = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  randomString = '';
-  for (let i = 0; i < 6; i++) {
-    randomString += charString[Math.floor(Math.random()*charString.length)]
-  }
-  return randomString;
-}
-
-function findMatch (match, userObj) {
-  const usersArray = Object.values(users);
-  let foundMatch = false;
-  for (user of usersArray) {
-    if (user.email === match || user.password === match) {
-      foundMatch = true;
-    }
-  }
-  return foundMatch;
-}
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`);
-
 });
