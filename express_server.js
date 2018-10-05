@@ -90,15 +90,15 @@ function userIdbyEmail (email) {
   return userId;
  }
 
-const userUrlDatabase = (userId, urlDatabase1) => {
+const urlsForUser = (userId) => { //returns a list of objects with shortURL and longURL as keys
 
   let retUrlArr = [];
   Object.keys(urlDatabase).forEach((url) => {
-    if (urlDatabase1[url].userID === userId) {
+    if (urlDatabase[url].userID === userId) {
       let retUrlObj = {};
       retUrlObj.longURL ='';
       retUrlObj.shortURL = url;
-      retUrlObj.longURL = urlDatabase1[url].longURL;
+      retUrlObj.longURL = urlDatabase[url].longURL;
       retUrlArr.push(retUrlObj);
     }
   });
@@ -117,7 +117,7 @@ app.get('/', (req, res) => {
 app.get('/urls', (req, res) => {
   if (req.cookies.user_id) {
     let userId = req.cookies.user_id;
-    let userUrlsArray= userUrlDatabase(userId, urlDatabase);
+    let userUrlsArray= urlsForUser(userId, urlDatabase);
     let templateVars = {
       email: users[userId].email,
       urls: userUrlsArray
@@ -154,6 +154,7 @@ app.get('/urls/:id', (req, res) => {
   let userId = req.cookies.user_id;
   let templateVars = {
     user: users[userId],
+    email: users[userId].email,
     shortURL: req.params.id,
     fullURL: urlDatabase[req.params.id].longURL
   };
@@ -170,16 +171,18 @@ app.post('/urls', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res, next) => {
+
   let longURL = urlDatabase[req.params.shortURL].longURL;
+
   if (longURL) {
-    res.redirect('urls_show');
+    res.redirect('/urls');
   } else {
     res.send('No such shortURL!!\n');
   }
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  if (req.cookie.user_id === urldatabase[req.params.id].userID) {
+  if (req.cookies.user_id === urldatabase[req.cookies.user_id].userID) {
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
   } else {
@@ -188,8 +191,8 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/urls/:id/update', (req, res) => {
-  if (req.cookie.user_id === urldatabase[req.params.id].userID) {
-    urlDatabase[req.params.id].longURL = req.body.fullURL;
+  if (req.cookies.user_id === urldatabase[req.cookies.user_id].userID) {
+    urlDatabase[req.cookies.user_id].longURL = req.body.fullURL;
     res.redirect('/urls');
   } else {
     res.status(403).send('No Permission to Access');
