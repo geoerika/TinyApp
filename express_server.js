@@ -142,7 +142,8 @@ app.get('/urls/new', (req, res) => {
   if(req.cookies.user_id) {
     let userId = req.cookies.user_id;
     let templateVars = {
-      user: users[userId]
+      user: users[userId],
+      email: users[userId].email
     }
     res.render('urls_new', templateVars);
   } else {
@@ -166,6 +167,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/urls', (req, res) => {
   let shortURL = generateRandomString();
+  urlDatabase[shortURL] = {};
   urlDatabase[shortURL].longURL = req.body.longURL;    // Respond with 'Ok'
   res.redirect(`/urls/${shortURL}`);
 });
@@ -181,9 +183,18 @@ app.get('/urls/:shortURL', (req, res, next) => {
   }
 });
 
+app.get("/u/:shortURL", (req, res, next) => {
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+  console.log("longUrl:", longURL);
+  if (longURL) {
+    res.redirect(longURL);
+  } else {
+    res.send('No such shortURL!!\n');
+  }
+});
+
 app.post('/urls/:id/delete', (req, res) => {
   if (req.cookies.user_id === urlDatabase[req.params.id].userID) {
-    console.log(req.cookies.user_id);
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
   } else {
