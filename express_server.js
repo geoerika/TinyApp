@@ -168,7 +168,7 @@ app.get('/urls', (req, res) => {    //opens a page with a list of short urls and
     };
     res.render('urls_index', templateVars);
   } else {
-    res.redirect('/login');
+    res.status(403).send('No Permission to Access');
   }
 });
 
@@ -199,17 +199,20 @@ app.get('/urls/new', (req, res) => {    //opens a page for generating a short ur
 });
 
 
-app.get('/urls/:id', (req, res) => {    //opens a page to update a certain long url
+app.get('/urls/:id', (req, res) => {   //opens a page to update a certain long url
 
-  let userId = req.session.user_id;
-  let templateVars = {
-    user: users[userId],
-    email: users[userId].email,
-    shortURL: req.params.id,
-    fullURL: urlDatabase[req.params.id].longURL
-  };
-
-  res.render('urls_show', templateVars);
+  if (req.session.user_id) {
+    let userId = req.session.user_id;
+    let templateVars = {
+      user: users[userId],
+      email: users[userId].email,
+      shortURL: req.params.id,
+      fullURL: urlDatabase[req.params.id].longURL
+    };
+    res.render('urls_show', templateVars);
+  } else {
+    res.status(403).send('No Permission to Access');
+  }
 });
 
 
@@ -271,8 +274,13 @@ app.post('/urls/:id/update', (req, res) => {  //records an updated long url in t
 
 
 app.get('/login', (req, res) => {   //sends the user to a login page
-  res.render('login');
-})
+
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    res.render('login');
+  }
+});
 
 
 app.post('/login', (req, res) => {  //manages login and sets session cookies
@@ -297,14 +305,18 @@ app.post('/login', (req, res) => {  //manages login and sets session cookies
 
 app.post('/logout', (req, res) => {   //logs out a user and clears session cookies
 
-  res.clearCookie.user_id;
+  req.session = null;
   res.redirect('/login');
 });
 
 
 app.get('/register', (req, res) => {  //renders a registration page
 
-  res.render('register');
+  if (req.session.user_id) {
+    res.redirect('/urls');
+  } else {
+    res.render('register');
+  }
 });
 
 
