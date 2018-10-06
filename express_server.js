@@ -36,7 +36,8 @@ const urlDatabase = {  //database for short urls with their coresponding long ur
   }
 };
 
-const users = {   //database for users
+
+const users = {         //database for users
   'userRandomID': {
     id: 'userRandomID',
     email: 'user@example.com',
