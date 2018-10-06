@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
-   <header>
-    <% include ../views/partials/_header %>
-  </header>
+    <head>
+        <title>urls_show</title>
+    </head>
+    <body>
+        <header>
+            <% include ./partials/_header %>
+        </header>
+        <p></p>
+        <p>ShortURL: <b><%= shortURL %></b></p>
 
-  <p>ShortURL: <b><%= shortURL %></b></p>
+        <form method="POST" action="/urls/<%= shortURL %>/update">
+            <input name="fullURL" value="<%= fullURL %>">
+            <input type="submit" class="like" value="Update">
+        </form><br/>
 
-  <form method="POST" action="/urls/<%= shortURL %>/update">
-    <input name="fullURL" value="<%= fullURL %>">
-    <input type="submit" class="like" value="Update">
-  </form>
-
-</body>
+      <a href="/urls" "><b>Go to Urls</b></a>
+    </body>
 </html>

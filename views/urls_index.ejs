@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <title>TinyApp</title>
-</head>
-<body>
-  <header>
-    <% include ./partials/_header %>
-  </header>
-  <h2>LIST of URLS</h2>
-
-    <ul>
-      <% urls.forEach((url) => { %>
-            <li>
-              <%= url %> - <a href ="#"><%= url.longURL %></a>
-              <a href="/urls/<%= url %>" ">Edit</a><br/>
-              <form method="POST" action="/urls/<%= url %>/delete"><input type="submit" class="like" value="Delete url"></form><br/>
-            </li>
-      <% }) %>
-    </ul>
-
-  <a href ="#">Add a url:</a>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>List of short URLs</title>
+    </head>
+    <body style="font-size:20px; padding:50px;">
+        <header>
+            <% include ./partials/_header %>
+        </header>
+        <h2>YOUR URLS</h2>
+        <ul>
+            <% urls.forEach((url) => { %>
+                <li>
+                    <%= url.shortURL %> - <a href ="<%= url.longURL %>"><%= url.longURL %></a>
+                    <a href="/urls/<%= url.shortURL %>" ">Edit</a><br/>
+                    <form method="POST" action="/urls/<%= url.shortURL %>/delete"><input type="submit" class="like" value="Delete url"></form><br/>
+                </li>
+            <% }) %>
+        </ul>
+        <a href ="/urls/new">Add a url:</a>
+    </body>
 </html>
