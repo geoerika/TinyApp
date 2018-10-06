@@ -1,15 +1,11 @@
 <title>HEADER </title>
-
-<p>
-  <% if (username) { %>
-      <p><%= username %></p>
-      <form method="POST" action="/logout">
+  <% if (user) { %>
+    <%= user.email %>
+    <form method="POST" action="/logout">
       <input type="submit" value="Logout">
-      </form>
-  <% } else { %>
-    <form method="POST" action="/login">
-      <input name="username" type="text">
-      <input type="submit" value="Login">
     </form>
+  <% } else { %>
+    <a href="/register">Register</a><br/>
+    <p></p>
+    <a href="/login">Login</a>
   <% } %>
-</p>
