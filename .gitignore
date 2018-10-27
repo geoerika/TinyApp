@@ -1,0 +1,3 @@
+node_modules/
+views/hello_world.ejs
+views/homepage.ejs
