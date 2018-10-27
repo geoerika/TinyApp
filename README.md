@@ -4,11 +4,11 @@ TinyApp is a full stack web application built with Node and Express
 
 ## Final Product
 
-!["Screenshot of User URLs page"] (https://github.com/geoerika/TinyApp/blob/master/docs/ulrs-page.png)
+!["Screenshot of User URLs page"] (https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/ulrs-page.png)
 
-!["Screenshot of New URLs page"] (https://github.com/geoerika/TinyApp/blob/master/docs/urls-new.png)
+!["Screenshot of New URLs page"] (https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/urls-new.png)
 
-!["Screenshot of Login page"] (https://https://github.com/geoerika/TinyApp/blob/master/docs/login.png)
+!["Screenshot of Login page"] (https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/login.png)
 
 
 ## Dependencies
