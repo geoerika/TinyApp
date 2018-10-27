@@ -1,12 +1,12 @@
 'use strict';
 
-var express = require('express');
-var cookieSession = require('cookie-session'); //to store cookies on the client
-var bcrypt = require('bcryptjs'); //to hash passwords
+const express = require('express');
+const cookieSession = require('cookie-session'); //to store cookies on the client
+const bcrypt = require('bcryptjs'); //to hash passwords
 const bodyParser = require('body-parser');
 
-var app = express();
-var PORT = 8080; // default port 8080
+const app = express();
+const PORT = 8080; // default port 8080
 
 app.set('view engine', 'ejs');
 
@@ -74,28 +74,15 @@ const generateRandomString = () => {  //generates a random user.id and a short u
 };
 
 
-const findMatch = (match, userObj)=> {  //checks if a registering email or password exists in the database
+const findMatch = (match, userObj)=> {  //checks if a registering email exists in the database
 
   const usersArray = Object.values(users);
   let foundMatch = false;
 
-  for (let user in usersArray) {
-    if (user.email === match || user.password === match) {
-      foundMatch = true;
-    }
-  }
-  return foundMatch;
-};
-
-
-const matchEmailPass = (email, password) => {   //function to check if an email and password match for one user
-
-  const usersArray = Object.values(users); //creates a list of users
-  let foundMatch = false;
-
   for (let user of usersArray) {
-    if ((user.email === email) && (user.password === password)) {
+    if (user.email === match) {
       foundMatch = true;
+      break;
     }
   }
   return foundMatch;
@@ -124,6 +111,7 @@ const userIdbyEmail = (email) => {  //get the user.id if email known
   for (let user of usersArray) {
     if (user.email === email) {
       userPass = user.password;
+      break;
     }
   }
   return userPass;
@@ -158,30 +146,24 @@ app.get('/', (req, res) => {    //redirects to /urls or /login, depending if the
 });
 
 
-app.get('/urls', (req, res) => {    //opens a page with a list of short urls and their corresponding long urls that belong to a logged in user
-
+app.get('/urls', (req, res) => {    //opens a page with a list of short urls and their corresponding
+                                    // long urls that belong to a logged in user
   if(req.session.user_id) {
     let userId = req.session.user_id;
-    let userUrlsArray= urlsForUser(userId, urlDatabase);
+    let userUrlsArray= urlsForUser(userId, urlDatabase); //obtains the list of urls for the user
     let templateVars = {
       email: users[userId].email,
       urls: userUrlsArray
     };
     res.render('urls_index', templateVars);
   } else {
-    res.status(403).send('No Permission to Access');
+    res.status(403).send('Please login or register'); //send error message
   }
 });
 
 
-app.get('/hello', (req, res) => {   //not sure we still need this, maybe in the future
-
-  let userId = req.session.user_id;
-  let templateVars = {
-    email: users[userId].email,
-    greeting: 'Hello World!'
-  };
-  res.render('hello_world', templateVars);
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
 });
 
 
@@ -195,36 +177,42 @@ app.get('/urls/new', (req, res) => {    //opens a page for generating a short ur
     }
     res.render('urls_new', templateVars);
   } else {
-    res.redirect('/login');
+    res.redirect('/login'); //redirects to login page
   }
 });
 
 
 app.get('/urls/:id', (req, res) => {   //opens a page to update a certain long url
 
-  if (req.session.user_id) {
+  if (req.session.user_id) { //checks if any user is logged in
     let userId = req.session.user_id;
-    let templateVars = {
-      user: users[userId],
-      email: users[userId].email,
-      shortURL: req.params.id,
-      fullURL: urlDatabase[req.params.id].longURL
-    };
-    res.render('urls_show', templateVars);
+
+    let userUrlsArray= urlsForUser(userId, urlDatabase); //gets urls for user
+    if (urlDatabase[req.params.id].userID === userId) { //makes sure the user only has access to own list of short urls
+      let templateVars = {
+        user: users[userId],
+        email: users[userId].email,
+        shortURL: req.params.id,
+        fullURL: urlDatabase[req.params.id].longURL
+      };
+      res.render('urls_show', templateVars);
+    } else {
+      res.status(403).send('Access to page denied.'); //denies access to page of short url for a user which did not create it
+    }
   } else {
-    res.status(403).send('No Permission to Access');
+    res.status(403).send('Access to page denied.'); //denies access to the urls page for non logged in users
   }
 });
 
 
 app.post('/urls', (req, res) => {  //records a new short url in the database
 
-  let shortURL = generateRandomString();
-  urlDatabase[shortURL] = {};
+  let shortURL = generateRandomString(); //generates short urls
+  urlDatabase[shortURL] = {}; //creates urls object in the database
   urlDatabase[shortURL].longURL = req.body.longURL;
   urlDatabase[shortURL].userID = req.session.user_id;
 
-  res.redirect(`/urls/${shortURL}`);
+  res.redirect(`/urls/${shortURL}`); //redirects to the short urls page
 });
 
 
@@ -235,7 +223,7 @@ app.get('/urls/:shortURL', (req, res, next) => {            //checks if there is
   if (longURL) {
     res.redirect('/urls');
   } else {
-    res.send('No such shortURL!!\n');
+    res.send('No valid shortURL!!\n');
   }
 });
 
@@ -247,29 +235,29 @@ app.get("/u/:shortURL", (req, res, next) => {  //uses a short url to navigate to
   if (longURL) {
     res.redirect(longURL);
   } else {
-    res.send('No such shortURL!!\n');
+    res.send('No valid shortURL!!\n');
   }
 });
 
 
 app.post('/urls/:id/delete', (req, res) => {    //deletes a short url object from the database when delete is clicked
 
-  if (req.session.user_id === urlDatabase[req.params.id].userID) {
+  if (req.session.user_id === urlDatabase[req.params.id].userID) { //only the user who created the urls can delete it
     delete urlDatabase[req.params.id];
     res.redirect('/urls');
   } else {
-    res.status(403).send('No Permission to Access');
+    res.status(403).send('Unable to delete this URL');
   }
 });
 
 
 app.post('/urls/:id/update', (req, res) => {  //records an updated long url in the database
 
-  if (req.session.user_id === urlDatabase[req.params.id].userID) {
+  if (req.session.user_id === urlDatabase[req.params.id].userID) { //makes sure that user can only update its own urls
     urlDatabase[req.params.id].longURL = req.body.fullURL;
     res.redirect('/urls');
   } else {
-    res.status(403).send('No Permission to Access');
+    res.status(403).send('Unable to update this URL');
   }
 });
 
@@ -286,19 +274,19 @@ app.get('/login', (req, res) => {   //sends the user to a login page
 
 app.post('/login', (req, res) => {  //manages login and sets session cookies
 
-  let userEmail = req.body.email;
-  let userPassword = req.body.password;
+  let userEmail = req.body.email; //obtaines email from html page
+  let userPassword = req.body.password; //obtains password from the html page
   let userPassinDatabase = userPassbyEmail(userEmail);
 
-  if (!findMatch(userEmail, users)) {
-    res.status(403).send('No Permission to Access');
+  if (!findMatch(userEmail, users)) { //check if user email exists in the database
+    res.status(403).send('Please provide a valid email');
   } else {
-    if (!bcrypt.compareSync(userPassword, userPassinDatabase)) {  //checks provided password against hashed user password in user database
-    res.status(403).send('No Permission to Access');
-    } else {
+    if (bcrypt.compareSync(userPassword, userPassinDatabase)) {  //checks provided password against hashed user password in user database
       let userId = userIdbyEmail(userEmail);
       req.session.user_id = userId;   //sets the session cookie
       res.redirect('/');
+    } else {
+      res.status(403).send('Please provide a valid password');
     }
   }
 });
@@ -328,9 +316,9 @@ app.post('/register', (req, res) => {   //manages registration process
   const hashedPassword = bcrypt.hashSync(userPassword, 10); //password hashing using bcryptjs
 
   if (!userEmail || !userPassword) {    //checking if the new user provided both email and password
-    res.status(400).send('Bad Request');
+    res.status(400).send('Please provide an email and a password');
   } else if (findMatch(userEmail, users)) {   //checking if user email alreday exists in the database
-    res.status(400).send('Bad Request');
+    res.status(400).send('Email adress already registered');
   } else {
     let userId = generateRandomString();
     users[userId] = {};
@@ -338,7 +326,6 @@ app.post('/register', (req, res) => {   //manages registration process
     users[userId].email = userEmail;
     users[userId].password = hashedPassword;
     req.session.user_id = userId;   //sets the session cookie
-
     res.redirect('/urls');
   }
 });
