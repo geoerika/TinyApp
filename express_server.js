@@ -254,7 +254,7 @@ app.post('/urls/:id/delete', (req, res) => {    //deletes a short url object fro
 app.post('/urls/:id/update', (req, res) => {  //records an updated long url in the database
 
   if (req.session.user_id === urlDatabase[req.params.id].userID) { //makes sure that user can only update its own urls
-    urlDatabase[req.params.id].longURL = req.body.fullURL;
+    urlDatabase[req.params.id] = req.body.fullURL;
     res.redirect('/urls');
   } else {
     res.status(403).send('Unable to update this URL');
