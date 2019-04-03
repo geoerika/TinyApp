@@ -9,12 +9,12 @@
         <header>
             <% include ./partials/_header %>
         </header>
-        <h2>YOUR URLS</h2>
+        <h3>YOUR URLS</h3>
         <ul>
             <% urls.forEach((url) => { %>
                 <li>
                     <%= url.shortURL %> - <a href ="<%= url.longURL %>"><%= url.longURL %></a>
-                    <a href="/urls/<%= url.shortURL %>" ">Edit</a><br/>
+                    <a href="/urls/<%= url.shortURL %>" "><input type="submit" class="like" value="Edit url"></a><br/>
                     <form method="POST" action="/urls/<%= url.shortURL %>/delete"><input type="submit" class="like" value="Delete url"></form><br/>
                 </li>
             <% }) %>
