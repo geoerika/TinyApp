@@ -4,10 +4,13 @@ TinyApp is a full stack web application built with JavaScript, Node, and Express
 
 ## Final Product
 
+### List of user URLs
 !["Screenshot of User URLs page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/ulrs-page.png)
 
+### Creating a new short URL
 !["Screenshot of New URLs page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/urls-new.png)
 
+### Login page
 !["Screenshot of Login page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/login_page.png)
 
 
