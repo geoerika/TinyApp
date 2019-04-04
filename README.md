@@ -8,7 +8,7 @@ TinyApp is a full stack web application built with JavaScript, Node, and Express
 
 !["Screenshot of New URLs page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/urls-new.png)
 
-!["Screenshot of Login page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/login.png)
+!["Screenshot of Login page"](https://raw.githubusercontent.com/geoerika/TinyApp/master/docs/login_page.png)
 
 
 ## Dependencies
