@@ -10,8 +10,9 @@
         <p></p>
         <p>ShortURL: <b><%= shortURL %></b></p>
 
-        <form method="POST" action="/urls/<%= shortURL %>/update">
-            <input name="fullURL" value="<%= fullURL %>">
+        <form method="POST" action="/urls/<%= shortURL %>" enctype="application/x-www-form-urlencoded">
+            <input name="fullURL" value="<%= fullURL %>" >
+            <input type="hidden" name="_method" value="PUT">
             <input type="submit" class="like" value="Update">
         </form><br/>
 
