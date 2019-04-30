@@ -15,7 +15,9 @@
                 <li>
                     <%= url.shortURL %> - <a href ="<%= url.longURL %>"><%= url.longURL %></a>
                     <a href="/urls/<%= url.shortURL %>" "><input type="submit" class="like" value="Edit url"></a><br/>
-                    <form method="POST" action="/urls/<%= url.shortURL %>/delete"><input type="submit" class="like" value="Delete url"></form><br/>
+                    <form method="POST" action="/urls/<%= url.shortURL %>" enctype="application/x-www-form-urlencoded">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="submit" class="like" value="Delete"></form><br/>
                 </li>
             <% }) %>
         </ul>
