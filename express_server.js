@@ -1,6 +1,7 @@
 'use strict';
 
 const express = require('express');
+const methodOverride = require('method-override');
 const cookieSession = require('cookie-session'); //to store cookies on the client
 const bcrypt = require('bcryptjs'); //to hash passwords
 const bodyParser = require('body-parser');
@@ -11,6 +12,20 @@ const PORT = 8080; // default port 8080
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(methodOverride('_method'));
+
+app.use(methodOverride(function (req, res) {
+  console.log(urlDatabase);
+  console.log('req:', req.body);
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    // look in urlencoded POST bodies and delete it
+    var method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
+}));
+
 app.use(cookieSession({
   name: 'session',
   keys: ['hsdklhfd'],
@@ -240,10 +255,11 @@ app.get("/u/:shortURL", (req, res, next) => {  //uses a short url to navigate to
 });
 
 
-app.post('/urls/:id/delete', (req, res) => {    //deletes a short url object from the database when delete is clicked
+app.delete('/urls/:id', (req, res) => {    //deletes a short url object from the database when delete is clicked
 
   if (req.session.user_id === urlDatabase[req.params.id].userID) { //only the user who created the urls can delete it
     delete urlDatabase[req.params.id];
+        console.log("delete: ",urlDatabase);
     res.redirect('/urls');
   } else {
     res.status(403).send('Unable to delete this URL');
@@ -251,10 +267,11 @@ app.post('/urls/:id/delete', (req, res) => {    //deletes a short url object fro
 });
 
 
-app.post('/urls/:id/update', (req, res) => {  //records an updated long url in the database
+app.put('/urls/:id', (req, res) => {  //records an updated long url in the database
 
   if (req.session.user_id === urlDatabase[req.params.id].userID) { //makes sure that user can only update its own urls
-    urlDatabase[req.params.id] = req.body.fullURL;
+    urlDatabase[req.params.id].longURL = req.body.fullURL;
+    console.log("put: ",urlDatabase);
     res.redirect('/urls');
   } else {
     res.status(403).send('Unable to update this URL');
